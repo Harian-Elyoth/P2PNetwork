@@ -10,11 +10,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)  # Require the specified standard
 
 # Set the output directory for binaries
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-
+set(CMAKE_CXX_FLAGS "${CMAXE_CXX_FLAGS} -std=c++20 -Wall -Wextra -Wpedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 ## Source Files
-set(SOURCE_FILES
-    src/main.cpp
-    # Add additional source files here
+file(GLOB_RECURSE SOURCE_FILES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc  # Add your source files here
 )
 
 ## Executable
