@@ -1,4 +1,6 @@
-#include "NetworkMessage.hh"
+#ifndef P2P_NODE_HH
+#define P2P_NODE_HH
+
 #include <mutex>
 #include <queue>
 #include <string>
@@ -19,7 +21,7 @@ class P2PNode {
     void release();
 
   private:
-    std::string m_ip;
+
     uint16_t m_port;
     std::thread m_listenThread;
     int64_t m_listenSocket;
@@ -28,15 +30,19 @@ class P2PNode {
     std::queue<NetworkMessage> m_msgQueue;
     std::mutex m_msgQueueMutex;
 
-    static void listenThreadFunc(void *arg);
-    static void msgHandlerThreadFunc(void *arg);
+    bool m_isRunning;
 
-    bool listenToNodes();
+    static void listenThreadFunc(void *p_arg);
+    static void msgHandlerThreadFunc(void *p_arg);
+
+  
     bool createSocket();
     bool bindSocket();
 
-    void handleMsg(NetworkMessage msg);
-    void sendMsg(NetworkMessage msg);
-    void sendMsg(NetworkMessage msg, const std::string &ip,
-                 const std::string &port);
+    void handleMsg(NetworkMessage p_msg);
+    void sendMsg(NetworkMessage p_msg);
+    void sendMsg(NetworkMessage p_msg, const std::string &p_ip,
+                 const std::string &p_port);
 };
+
+#endif // P2P_NODE_HH

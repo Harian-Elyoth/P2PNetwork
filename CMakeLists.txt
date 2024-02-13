@@ -10,8 +10,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)  # Require the specified standard
 
 # Set the output directory for binaries
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+
+# Set the output compiler flags
 set(CMAKE_CXX_FLAGS "${CMAXE_CXX_FLAGS} -std=c++20 -Wall -Wextra -Wpedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+option(DEBUG "Build with debug information" OFF) # OFF by default
+if(DEBUG)
+    message("Building with debug information")
+    add_compile_options(-g)
+else()
+    message("Building without debug information")
+    add_compile_options(-O3)
+endif()
+
 ## Source Files
 file(GLOB_RECURSE SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc  # Add your source files here

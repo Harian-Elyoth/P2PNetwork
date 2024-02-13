@@ -1,0 +1,33 @@
+Passive Sensors:
+1. Temperature sensor - Measures the ambient temperature.
+2. Light sensor - Detects the intensity of light in the environment.
+3. Humidity sensor - Measures the amount of moisture in the air.
+4. Pressure sensor - Measures the atmospheric pressure.
+5. Proximity sensor - Detects the presence or absence of nearby objects.
+6. Accelerometer - Measures acceleration forces on an object.
+7. Gyroscope - Measures the orientation and rotation of an object.
+8. Magnetometer - Detects the presence and strength of magnetic fields.
+9. Infrared sensor - Detects infrared radiation emitted by objects.
+10. Gas sensor - Detects the presence and concentration of gases in the air.
+1. Motion sensor - Detects movement in its field of view.
+2. Touch sensor - Detects physical touch or pressure.
+3. RFID reader - Reads data from RFID tags.
+4. Ultrasonic sensor - Measures distance by emitting ultrasonic waves.
+5. Camera - Captures images or records videos.
+6. Microphone - Captures audio or sound waves.
+7. Speaker - Produces sound or audio output.
+8. Actuator - Performs mechanical actions based on input signals.
+9. Motor - Converts electrical energy into mechanical motion.
+10. Solenoid - Generates linear motion by electromagnetic force.
+
+Actionner:
+Connected light bulb - A light bulb that can be controlled using a web interface.
+Connected thermostat - A thermostat that can be controlled using a web interface.
+Connected smart plug - A plug that can be controlled using a web interface to turn on/off connected devices.
+Connected door lock - A door lock that can be controlled using a web interface to lock/unlock the door.
+Connected security camera - A security camera that can be controlled using a web interface to view live footage.
+Connected sprinkler system - A sprinkler system that can be controlled using a web interface to water the garden.
+Connected garage door opener - A garage door opener that can be controlled using a web interface to open/close the garage door.
+Connected blinds - Blinds that can be controlled using a web interface to open/close or adjust the level of sunlight.
+Connected sound system - A sound system that can be controlled using a web interface to play music or adjust volume.
+Connected coffee maker - A coffee maker that can be controlled using a web interface to brew coffee.
