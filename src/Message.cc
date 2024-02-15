@@ -5,11 +5,10 @@ Message::Message() : m_type(Type::UNKNOWN) {}
 
 Message::Message(Type type) : m_type(type) {}
 
-Message::~Message() { if (m_data) delete[] m_data; }
+Message::~Message() {}
 
 Message::Message(const Message &other) {
     m_type = other.m_type;
-    m_size = other.m_size;
     m_timestamp = other.m_timestamp;
     m_from = other.m_from;
     m_from_len = other.m_from_len;
@@ -69,3 +68,14 @@ void Message::deserialize(const char* buffer)
 }
 
 Message::Type Message::getType() const { return m_type; }
+
+Message::Type Message::checkType(const char* buffer) {
+    if (buffer == nullptr) {
+        std::cerr << "Buffer is null" << std::endl;
+        return Type::UNKNOWN;
+    }
+    char* CurrentPos = const_cast<char*>(buffer);
+    Type l_type;
+    memcpy(&l_type, CurrentPos, sizeof(l_type));
+    return l_type;
+}

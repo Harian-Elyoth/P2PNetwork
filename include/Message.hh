@@ -6,14 +6,23 @@
 #include <netinet/in.h>
 #include <time.h>
 
-#include "MessageBuilder.hh"
-
 class Message {
 
   public:
 
+    enum class Type {
+        JOIN,
+        ACCEPT,
+        DISCOVER_REQUEST,
+        DISCOVER_RESPONSE,
+        DATA_TRANSFER,
+        KEEP_ALIVE,
+        HEART_BEAT,
+        LEAVE,
+        UNKNOWN,
+        NB_TYPES
+    };
 
-    static constexpr size_t s_max_size = 1024;
     /**
      * @brief Constructor
      */
@@ -22,7 +31,12 @@ class Message {
     /**
      * @brief Destructor
      */
-    ~Message();
+    virtual ~Message();
+
+    /**
+     * @brief Constructor
+     */
+    Message(Type type);
 
     /**
      * @brief Copy Constructor
@@ -32,36 +46,29 @@ class Message {
     /**
      * @brief Serialize the message
      */
-    virtual size_t serialize(char* buffer) const = 0;
+    virtual size_t serialize(char* buffer) const;
 
     /**
      * @brief Deserialize the message
      */
-    virtual void deserialize(const char* buffer) = 0;
+    virtual void deserialize(const char* buffer);
 
-    friend class MessageBuilder;
+    /**
+     * @brief Get the type of the message
+     */
+    Type getType() const;
+
+    static Type checkType(const char* buffer);
 
 protected:
     
+    Type m_type;
     timespec m_timestamp;
     sockaddr_in m_from;
     socklen_t m_from_len;
     sockaddr_in m_to;
     socklen_t m_to_len;
 
-    /*
-
-    JOIN: NA
-    ACCEPT: data = map:<id, std::pair(ip, port)>
-    DISCOVER_REQUEST: NA
-    DISCOVER_RESPONSE: data = map:<id, std::pair(ip, port)>
-    DATA_TRANSFER: data = <data>
-    KEEP_ALIVE: NA
-    HEART_BEAT: NA
-    LEAVE: NA
-
-
-    */
 };
 
 #endif // MESSAGE_HH

@@ -1,26 +1,20 @@
 #include "MessageFactory.hh"
 
-std::unique_ptr<Message> MessageFactory::createMessage(Type type)
+Message* MessageFactory::createMessage(Message::Type type)
 {
     switch (type)
     {
-    case Type::JOIN:
-        return std::make_unique<JoinMessage>();
-    case Type::ACCEPT:
-        return std::make_unique<JoinResponseMessage>();
-    case Type::LEAVE:
-        return std::make_unique<LeaveMessage>();
-    case Type::DISCOVER_REQUEST:
-        return std::make_unique<LeaveResponseMessage>();
-    case Type::DISCOVER_RESPONSE:
-        return std::make_unique<PingMessage>();
-    case Type::KEEP_ALIVE:
-        return std::make_unique<PongMessage>();
-    case Type::DATA_TRANSFER:
-        return std::make_unique<DataMessage>();
-    case Type::HEART_BEAT:
-        return std::make_unique<DataResponseMessage>();
-    default:
-        return nullptr;
+        case Message::Type::JOIN:
+        case Message::Type::ACCEPT:
+        case Message::Type::LEAVE:
+        case Message::Type::DISCOVER_REQUEST:
+        case Message::Type::KEEP_ALIVE:
+            return new Message(type);
+        case Message::Type::DISCOVER_RESPONSE:
+        case Message::Type::DATA_TRANSFER:
+        case Message::Type::HEART_BEAT:
+            return new DataMessage(type);
+        default:
+            return nullptr;
     }
 }

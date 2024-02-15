@@ -5,9 +5,21 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#define BOOTSTRAP_SERVER_IP "127.0.0.1"
+#define BOOTSTRAP_SERVER_PORT 55660
+
 P2PNode::P2PNode()
-    : m_isRunning(false), m_port(55660), m_listenSocket(-1), m_listenThread(),
-      m_msgHandlerThread(), m_msgQueue(), m_msgQueueMutex()
+    :   m_isRunning(false),
+        m_port(55660),
+        m_listenSocket(-1), 
+        m_listenThread(),
+        m_msgHandlerThread(), 
+        m_msgQueue(), 
+        m_msgQueueMutex(), 
+        m_isEntryPoint(false),
+        m_bootstrapServerPort(BOOTSTRAP_SERVER_PORT), 
+        m_bootstrapServerIp(BOOTSTRAP_SERVER_IP)
 {
     // TODO
 }
@@ -27,8 +39,7 @@ void P2PNode::start() {
     m_msgHandlerThread = std::thread(msgHandlerThreadFunc, this);
 
     // Send JOIN message in a broadcast way
-    NetworkMessage joinMessage;
-
+    Message* joinMessage = MessageFactory::createMessage(Message::Type::JOIN);
 
     sendMsg(joinMessage);
 
@@ -49,12 +60,15 @@ void P2PNode::msgHandlerThreadFunc(void *p_arg) {
     {
         std::lock_guard<std::mutex> lock(l_node->m_msgQueueMutex);
         if (!l_node->m_msgQueue.empty()) {
-            NetworkMessage l_msg = l_node->m_msgQueue.front();
+            Message *l_msg = l_node->m_msgQueue.front();
+            l_node->m_msgHandlerStrategy->handleMessage(l_msg);
+            delete l_msg;
             l_node->m_msgQueue.pop();
-            l_node->handleMsg(l_msg);
         }
     }
-}   
+}  
+
+
 void P2PNode::listenThreadFunc(void *p_arg) {
     P2PNode *l_node = static_cast<P2PNode *>(p_arg);
     if (!l_node->createSocket()) {
@@ -67,26 +81,32 @@ void P2PNode::listenThreadFunc(void *p_arg) {
     }
     while(l_node->m_isRunning)
     {   
-        char buffer [Message::s_max_size];
+        constexpr size_t l_max_size = sizeof(Message) + DataMessage::s_max_msg_size;
+        char buffer[l_max_size];
         sockaddr l_incoming_addr;
         socklen_t l_incoming_addr_len = sizeof(l_incoming_addr); // Initialize the length
 
-        ssize_t l_bytes_received = recvfrom(l_node->m_listenSocket, buffer, Message::s_max_size, 0, &l_incoming_addr, &l_incoming_addr_len);
-
-        if (l_bytes_received == -1) {
+        // Read the message
+        ssize_t l_bytes_received = recvfrom(l_node->m_listenSocket, buffer, l_max_size, 0, &l_incoming_addr, &l_incoming_addr_len);
+        
+        if (l_bytes_received == -1) 
+        {
             // Handle error, for example:
             perror("recvfrom failed");
             return; // or throw an exception
         }
 
         // Check that we received enough bytes to form a Message object
-        if (bytes_received < sizeof(Message)) {
+        if ((l_bytes_received == sizeof(Message)) || (l_bytes_received == sizeof(Message) + DataMessage::s_max_msg_size)) 
+        {
             std::cerr << "Received message was too short to be a Message object\n";
             return; // or throw an exception
         } 
-        Message l_m;
-        l_m.deserialize(buffer);
-        NetworkMessage l_msg(l_m, l_incoming_addr, l_incoming_addr_len);
+
+        Message::Type l_recv_msg_type = Message::checkType(buffer);
+
+        Message* l_msg = MessageFactory::createMessage(l_recv_msg_type);
+        l_msg->deserialize(buffer);
 
         // Use std::lock_guard for exception safety
         std::lock_guard<std::mutex> lock(l_node->m_msgQueueMutex);
@@ -96,11 +116,8 @@ void P2PNode::listenThreadFunc(void *p_arg) {
 
 }
 
-void P2PNode::handleMsg(NetworkMessage p_msg) {
-    
-}
 
-void P2PNode::sendMsg(NetworkMessage msg) {
+void P2PNode::sendMsg(Message* msg) {
     // TODO
 }
 
